@@ -19,10 +19,11 @@ class B: public I {
 
 class C: public I {
  public:
-    B* x;               // Change to I* x; to see inlining of the dispatch code into doIt(C*)
-    constexpr C(): I(classC) {
-        x = new B();
-    }
+	// Change to I* x; to see inlining of the dispatch code into doIt(C*)
+	B* x;               
+	constexpr C(): I(classC) {
+		x = new B();
+	}
 };
 
 int doIt(A* self);
@@ -33,13 +34,13 @@ template<class Resolve, class As>
 static As select_overload(Resolve fnc) {
 #ifndef NDEBUG
 	// Sanity check on the dispatch table correctness -
-    { A item{}; auto ptr = &item; assert(ptr == static_cast<I*>(ptr)); }
-    { B item{}; auto ptr = &item; assert(ptr == static_cast<I*>(ptr)); }
-    { C item{}; auto ptr = &item; assert(ptr == static_cast<I*>(ptr)); }        
+	{ A item{}; auto ptr = &item; assert(ptr == static_cast<I*>(ptr)); }
+	{ B item{}; auto ptr = &item; assert(ptr == static_cast<I*>(ptr)); }
+	{ C item{}; auto ptr = &item; assert(ptr == static_cast<I*>(ptr)); }        
 #endif
 	// static_cast selects the correct overload, 
 	// reinterpret_cast stores the address into the table
-    return reinterpret_cast<As>( static_cast<Resolve>(fnc)); 
+	return reinterpret_cast<As>( static_cast<Resolve>(fnc)); 
 }
 
 static int (*const dispatch[])(I*) = {
@@ -49,10 +50,10 @@ static int (*const dispatch[])(I*) = {
 };
 
 int doIt(I* self) {
-    assert(self->typeId < (sizeof(dispatch) / sizeof(dispatch[0])));
-    auto res = dispatch[self->typeId];
-    assert(res != nullptr);
-    return res(self);
+	assert(self->typeId < (sizeof(dispatch) / sizeof(dispatch[0])));
+	auto res = dispatch[self->typeId];
+	assert(res != nullptr);
+	return res(self);
 }
 
 int doIt(A* self) {
